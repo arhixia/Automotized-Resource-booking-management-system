@@ -10,7 +10,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
-    is_admin = Column(Boolean, default=False)  # Флаг, определяющий, является ли пользователь администратором
+    is_admin = Column(Boolean, default=False) 
 
     bookings = relationship("Booking", back_populates="user")
 
@@ -20,7 +20,7 @@ class Resource(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True)
-    type = Column(String)  # Убрали unique, чтобы несколько ресурсов могли быть одного типа
+    type = Column(String)  
     capacity = Column(Integer)
     price = Column(Integer)
 
