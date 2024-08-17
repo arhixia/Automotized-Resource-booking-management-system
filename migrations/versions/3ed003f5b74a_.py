@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 79816fa7af1b
+Revision ID: 3ed003f5b74a
 Revises: 
-Create Date: 2024-08-13 16:15:54.433138
+Create Date: 2024-08-17 14:17:12.948312
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '79816fa7af1b'
+revision: str = '3ed003f5b74a'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -26,15 +26,14 @@ def upgrade() -> None:
     sa.Column('type', sa.String(), nullable=True),
     sa.Column('capacity', sa.Integer(), nullable=True),
     sa.Column('price', sa.Integer(), nullable=True),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_resources_id'), 'resources', ['id'], unique=False)
+    op.create_index(op.f('ix_resources_name'), 'resources', ['name'], unique=False)
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(), nullable=True),
     sa.Column('hashed_password', sa.String(), nullable=True),
-    sa.Column('is_admin', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_users_id'), 'users', ['id'], unique=False)
@@ -44,7 +43,7 @@ def upgrade() -> None:
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('resource_id', sa.Integer(), nullable=True),
     sa.Column('start_time', sa.DateTime(), nullable=True),
-    sa.Column('end_time', sa.DateTime(), nullable=False),
+    sa.Column('end_time', sa.DateTime(), nullable=True),
     sa.Column('is_confirmed', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['resource_id'], ['resources.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
@@ -54,8 +53,8 @@ def upgrade() -> None:
     op.create_table('schedules',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('resource_id', sa.Integer(), nullable=True),
-    sa.Column('start_time', sa.DateTime(), nullable=False),
-    sa.Column('end_time', sa.DateTime(), nullable=False),
+    sa.Column('start_time', sa.DateTime(), nullable=True),
+    sa.Column('end_time', sa.DateTime(), nullable=True),
     sa.Column('is_blocked', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['resource_id'], ['resources.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -73,6 +72,7 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_users_username'), table_name='users')
     op.drop_index(op.f('ix_users_id'), table_name='users')
     op.drop_table('users')
+    op.drop_index(op.f('ix_resources_name'), table_name='resources')
     op.drop_index(op.f('ix_resources_id'), table_name='resources')
     op.drop_table('resources')
     # ### end Alembic commands ###
